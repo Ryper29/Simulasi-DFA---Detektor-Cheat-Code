@@ -32,8 +32,11 @@ Aplikasi ini mensimulasikan cara kerja Deterministic Finite Automata dalam mende
 ## Struktur File
 
 ```
-├── index.html        # File utama aplikasi
+├── index.html        # Struktur HTML halaman utama
+├── style.css         # Custom CSS (animasi, efek, scrollbar)
+├── script.js         # Logika JavaScript DFA & konfigurasi Tailwind
 ├── README.md         # Dokumentasi project
+├── .gitignore        # Mengecualikan file PDF dan gambar
 ```
 
 ---

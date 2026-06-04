@@ -1,0 +1,5 @@
+# Abaikan file PDF dan gambar laporan
+*.pdf
+*.png
+*.jpg
+*.jpeg

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="dark" lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Simulasi DFA - Detektor Cheat Code</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#20005f",
+                        "outline": "#948ea1",
+                        "on-surface-variant": "#cac3d8",
+                        "inverse-surface": "#dfe2f3",
+                        "on-secondary-fixed": "#001f24",
+                        "secondary": "#bdf4ff",
+                        "on-tertiary-fixed": "#3f0018",
+                        "inverse-on-surface": "#2c303d",
+                        "secondary-container": "#00e3fd",
+                        "inverse-primary": "#6833ea",
+                        "on-error": "#690005",
+                        "on-surface": "#dfe2f3",
+                        "on-primary-fixed-variant": "#4f00d0",
+                        "on-tertiary-container": "#fff6f6",
+                        "surface-container": "#1b1f2c",
+                        "tertiary-container": "#da1e67",
+                        "surface-dim": "#0f131f",
+                        "outline-variant": "#494455",
+                        "surface-bright": "#353946",
+                        "on-tertiary-fixed-variant": "#8f003f",
+                        "primary-fixed": "#e8deff",
+                        "tertiary": "#ffb1c1",
+                        "on-secondary-container": "#00616d",
+                        "primary-fixed-dim": "#cdbdff",
+                        "surface-container-highest": "#313442",
+                        "on-primary-container": "#fcf6ff",
+                        "primary-container": "#7c4dff",
+                        "surface": "#0f131f",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-lowest": "#0a0e1a",
+                        "error-container": "#93000a",
+                        "on-primary": "#370096",
+                        "primary": "#cdbdff",
+                        "error": "#ffb4ab",
+                        "on-background": "#dfe2f3",
+                        "on-tertiary": "#66002a",
+                        "surface-tint": "#cdbdff",
+                        "background": "#0f131f",
+                        "tertiary-fixed": "#ffd9df",
+                        "secondary-fixed": "#9cf0ff",
+                        "on-secondary-fixed-variant": "#004f58",
+                        "surface-variant": "#313442",
+                        "tertiary-fixed-dim": "#ffb1c1",
+                        "surface-container-low": "#171b28",
+                        "secondary-fixed-dim": "#00daf3",
+                        "surface-container-high": "#262a37"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "max-width": "1200px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Hanken Grotesk"],
+                        "code-terminal": ["JetBrains Mono"],
+                        "label-caps": ["JetBrains Mono"],
+                        "headline-md": ["Sora"],
+                        "headline-md-mobile": ["Sora"],
+                        "display-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "code-terminal": ["14px", {"lineHeight": "1.5", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-md": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-md-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .cyber-grid {
+            background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .scanline {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 3px, 3px 100%;
+        }
+        .pulsing-glow {
+            animation: pulse 2s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(124, 77, 255, 0.4); border-color: rgba(124, 77, 255, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(124, 77, 255, 0.7); border-color: rgba(205, 189, 255, 1); }
+        }
+        .controller-shadow {
+            box-shadow: inset 0 8px 20px rgba(0,0,0,0.7), 0 2px 0 rgba(255,255,255,0.05);
+        }
+        .marching-ants {
+            background-image: linear-gradient(90deg, #7c4dff 50%, transparent 50%);
+            background-size: 20px 2px;
+            animation: ants 1s infinite linear;
+        }
+        @keyframes ants {
+            from { background-position: 0 0; }
+            to { background-position: 20px 0; }
+        }
+        body {
+            min-height: 100vh;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-base selection:bg-primary/30 min-h-screen overflow-x-hidden cyber-grid">
+    <!-- TopAppBar Desktop -->
+    <header class="bg-surface/80 backdrop-blur-lg fixed top-0 w-full border-b border-outline-variant/30 z-50 h-16 px-margin-desktop flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <span class="material-symbols-outlined text-primary text-3xl" style="font-variation-settings: 'FILL' 1;">memory</span>
+            <h1 class="font-headline-md text-primary tracking-tight">Simulasi DFA <span class="text-xs font-label-caps text-outline ml-2 opacity-50 uppercase tracking-widest">Cheat Code Detector</span></h1>
+        </div>
+        <div class="flex items-center gap-8">
+            <nav class="hidden md:flex items-center gap-6">
+                <a class="flex items-center gap-2 text-primary font-label-caps text-sm hover:text-primary-fixed transition-colors" href="#">
+                    <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">videogame_asset</span> SIMULATOR
+                </a>
+                <button onclick="openModal('modal-achievements')" class="flex items-center gap-2 text-outline font-label-caps text-sm hover:text-primary transition-colors cursor-pointer outline-none">
+                    <span class="material-symbols-outlined text-lg">emoji_events</span> ACHIEVEMENTS
+                </button>
+                <button onclick="openModal('modal-table')" class="flex items-center gap-2 text-outline font-label-caps text-sm hover:text-primary transition-colors cursor-pointer outline-none">
+                    <span class="material-symbols-outlined text-lg">table_chart</span> TABEL TRANSISI
+                </button>
+            </nav>
+            <div class="h-6 w-px bg-outline-variant/30 hidden md:block"></div>
+            <div class="flex gap-4">
+                <span onclick="openModal('modal-info')" class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer">info</span>
+                <span class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors cursor-pointer relative">
+                    notifications
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border border-surface"></span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-12 px-margin-desktop max-w-[1440px] mx-auto min-h-screen">
+        <div class="grid grid-cols-12 gap-gutter">
+            <!-- Sidebar: Status & Info -->
+            <aside class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+                <!-- State Card -->
+                <div class="bg-surface-container border border-outline-variant/20 rounded-2xl p-8 backdrop-blur-md shadow-xl flex flex-col items-center">
+                    <p class="text-label-caps font-label-caps text-outline mb-6 uppercase tracking-widest text-sm text-center">Automata Machine State</p>
+                    <div class="w-32 h-32 bg-primary-container text-on-primary-container rounded-2xl font-code-terminal text-4xl flex items-center justify-center border-2 border-primary/20 pulsing-glow transition-all duration-300" id="state-badge">
+                        q0
+                    </div>
+                    <div class="mt-8 flex flex-col items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-secondary-container shadow-[0_0_10px_rgba(0,227,253,1)]"></span>
+                            <span class="text-secondary text-xs font-label-caps tracking-widest">SYSTEM_READY</span>
+                        </div>
+                        <p class="text-[10px] font-label-caps text-outline-variant text-center px-4">Tugas Besar Teori Bahasa dan Otomata (TBO)</p>
+                    </div>
+                </div>
+
+                <!-- Target Banner -->
+                <div class="bg-surface-container-low border border-outline-variant/10 rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[10px] font-label-caps text-outline uppercase tracking-tighter">Target Pola Valid</span>
+                        <div class="marching-ants w-10 h-[1px]"></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <!-- Dapat Uang Banyak -->
+                        <div class="flex justify-between items-center bg-surface-container-highest/50 p-2 rounded border border-outline-variant/10">
+                            <span class="text-[8px] font-label-caps text-outline-variant">UANG BANYAK</span>
+                            <div class="flex gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_forward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">circle</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">circle</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">crop_square</span>
+                            </div>
+                        </div>
+                        <!-- Pukulan Maut -->
+                        <div class="flex justify-between items-center bg-surface-container-highest/50 p-2 rounded border border-outline-variant/10">
+                            <span class="text-[8px] font-label-caps text-outline-variant">PUKULAN MAUT</span>
+                            <div class="flex gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_forward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_forward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_forward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">crop_square</span>
+                            </div>
+                        </div>
+                        <!-- Membuka Semua Yang Terkunci -->
+                        <div class="flex justify-between items-center bg-surface-container-highest/50 p-2 rounded border border-outline-variant/10">
+                            <span class="text-[8px] font-label-caps text-outline-variant">UNLOCK ALL</span>
+                            <div class="flex gap-1">
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_downward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_downward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_upward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_downward</span>
+                                <span class="material-symbols-outlined text-[14px] text-secondary">arrow_downward</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hint / Status Logs -->
+                <div class="flex-grow bg-surface-container-lowest/50 border border-dashed border-outline-variant/30 rounded-2xl p-6 flex items-center justify-center text-center">
+                    <div class="text-outline font-label-caps text-[11px] uppercase tracking-[0.2em] leading-relaxed animate-pulse" id="hint-text">
+                        Menunggu input tombol pertama pada stik<br/>...
+                    </div>
+                </div>
+
+                <button class="w-full group relative px-8 py-4 bg-surface-container border border-outline-variant/30 rounded-xl text-on-surface-variant font-label-caps text-xs hover:border-primary hover:text-primary transition-all active:scale-95 shadow-lg overflow-hidden" onclick="resetDFA()">
+                    <span class="relative z-10 uppercase tracking-widest font-bold">Reset Mesin Otomata</span>
+                    <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </button>
+            </aside>
+
+            <!-- Main Panel: Terminal & Controller -->
+            <section class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+                <!-- Terminal View (Expanded) -->
+                <div class="bg-surface-container-highest border border-outline-variant rounded-2xl overflow-hidden relative shadow-2xl">
+                    <div class="px-6 py-3 border-b border-outline-variant/50 bg-surface flex items-center justify-between">
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 rounded-full bg-error/60"></div>
+                            <div class="w-3 h-3 rounded-full bg-tertiary/60"></div>
+                            <div class="w-3 h-3 rounded-full bg-secondary/60"></div>
+                        </div>
+                        <span class="text-[11px] font-label-caps text-outline tracking-widest">RIWAYAT_INPUT :: TERMINAL</span>
+                    </div>
+                    <div class="p-8 h-32 flex items-center justify-start gap-5 overflow-x-auto scanline scrollbar-hide">
+                        <div class="flex items-center gap-2 font-code-terminal text-primary text-2xl tracking-[0.4em]" id="input-buffer">[ Kosong ]</div>
+                        <span class="w-3 h-8 bg-primary animate-pulse ml-[-12px]"></span>
+                    </div>
+                </div>
+
+                <!-- Desktop Controller Section -->
+                <div class="bg-surface-container-high rounded-[60px] p-16 border-t border-outline-variant/20 controller-shadow relative overflow-hidden flex-grow flex flex-col justify-center items-center shadow-2xl">
+                    <div class="absolute inset-0 opacity-10 pointer-events-none">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-outline rounded-full"></div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-outline/50 rounded-full"></div>
+                    </div>
+
+                    <div class="w-full flex justify-between items-center relative z-10 max-w-2xl px-8">
+                        <!-- D-Pad (Desktop Scaled) -->
+                        <div class="grid grid-cols-3 grid-rows-3 gap-2">
+                            <div class="col-start-2">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-xl flex items-center justify-center hover:bg-surface-bright active:scale-95 transition-all text-on-surface-variant active:text-primary active:shadow-[0_0_20px_rgba(205,189,255,0.5)]" onclick="handleInput('UP')">
+                                    <span class="material-symbols-outlined text-3xl">arrow_upward</span>
+                                </button>
+                            </div>
+                            <div class="row-start-2 col-start-1">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-xl flex items-center justify-center hover:bg-surface-bright active:scale-95 transition-all text-on-surface-variant active:text-primary active:shadow-[0_0_20px_rgba(205,189,255,0.5)]" onclick="handleInput('LEFT')">
+                                    <span class="material-symbols-outlined text-3xl">arrow_back</span>
+                                </button>
+                            </div>
+                            <div class="row-start-2 col-start-2 bg-surface-container-low rounded-lg border border-outline-variant/10"></div>
+                            <div class="row-start-2 col-start-3">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-xl flex items-center justify-center hover:bg-surface-bright active:scale-95 transition-all text-on-surface-variant active:text-primary active:shadow-[0_0_20px_rgba(205,189,255,0.5)]" onclick="handleInput('RIGHT')">
+                                    <span class="material-symbols-outlined text-3xl">arrow_forward</span>
+                                </button>
+                            </div>
+                            <div class="row-start-3 col-start-2">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-xl flex items-center justify-center hover:bg-surface-bright active:scale-95 transition-all text-on-surface-variant active:text-primary active:shadow-[0_0_20px_rgba(205,189,255,0.5)]" onclick="handleInput('DOWN')">
+                                    <span class="material-symbols-outlined text-3xl">arrow_downward</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Center Branding -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-16 h-3 bg-surface-dim rounded-full mb-2"></div>
+                            <span class="text-[10px] font-label-caps text-outline-variant uppercase tracking-[0.4em]">TBO PAD v2.0</span>
+                            <div class="mt-4 flex gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons (Desktop Scaled) -->
+                        <div class="grid grid-cols-3 grid-rows-3 gap-2">
+                            <div class="col-start-2">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-full flex items-center justify-center hover:bg-surface-bright active:scale-90 transition-all text-emerald-400 group" onclick="handleInput('TRIANGLE')">
+                                    <span class="material-symbols-outlined text-3xl group-active:drop-shadow-[0_0_10px_#34d399]">change_history</span>
+                                </button>
+                            </div>
+                            <div class="row-start-2 col-start-1">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-full flex items-center justify-center hover:bg-surface-bright active:scale-90 transition-all text-pink-400 group" onclick="handleInput('SQUARE')">
+                                    <span class="material-symbols-outlined text-3xl group-active:drop-shadow-[0_0_10px_#f472b6]">crop_square</span>
+                                </button>
+                            </div>
+                            <div class="row-start-2 col-start-3">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-full flex items-center justify-center hover:bg-surface-bright active:scale-90 transition-all text-red-500 group" onclick="handleInput('CIRCLE')">
+                                    <span class="material-symbols-outlined text-3xl group-active:drop-shadow-[0_0_10px_#ef4444]">circle</span>
+                                </button>
+                            </div>
+                            <div class="row-start-3 col-start-2">
+                                <button class="w-16 h-16 bg-surface-container-highest border border-outline-variant/30 rounded-full flex items-center justify-center hover:bg-surface-bright active:scale-90 transition-all text-blue-400 group" onclick="handleInput('CROSS')">
+                                    <span class="material-symbols-outlined text-3xl group-active:drop-shadow-[0_0_10px_#60a5fa]">close</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex items-center gap-10">
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 h-2 bg-surface-dim rounded-full"></div>
+                            <span class="text-[8px] font-label-caps text-outline-variant opacity-40">SELECT</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-1">
+                            <div class="w-8 h-2 bg-surface-dim rounded-full"></div>
+                            <span class="text-[8px] font-label-caps text-outline-variant opacity-40">START</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let state = "q0";
+        let inputHistory = [];
+        let unlockedCheats = new Set();
+        let resetTimeout = null;
+        
+        function handleInput(btn) {
+            if (resetTimeout) {
+                clearTimeout(resetTimeout);
+                resetTimeout = null;
+            }
+
+            const buffer = document.getElementById('input-buffer');
+            
+            if (inputHistory.length === 0) {
+                buffer.innerHTML = "";
+            }
+            
+            const oldState = state;
+            
+            // =======================================================
+            // LOGIKA TRANSISI DFA MULTICABANG
+            // =======================================================
+            if (state === "q0") {
+                if (btn === "RIGHT") state = "q1";
+                else if (btn === "UP") state = "q7";
+                else state = "q0";
+            } else if (state === "q1") {
+                if (btn === "UP") state = "q2";
+                else state = "q0";
+            } else if (state === "q2") {
+                if (btn === "UP") state = "q3";
+                else state = "q0";
+            } else if (state === "q3") {
+                if (btn === "CIRCLE") state = "q4";
+                else if (btn === "RIGHT") state = "q8";
+                else state = "q0";
+            } else if (state === "q4") {
+                if (btn === "CIRCLE") state = "q5";
+                else state = "q0";
+            } else if (state === "q5") {
+                if (btn === "SQUARE") state = "q_money";
+                else state = "q0";
+            } else if (state === "q8") {
+                if (btn === "RIGHT") state = "q9";
+                else state = "q0";
+            } else if (state === "q9") {
+                if (btn === "SQUARE") state = "q_maut";
+                else state = "q0";
+            } else if (state === "q7") {
+                if (btn === "DOWN") state = "q10";
+                else state = "q0";
+            } else if (state === "q10") {
+                if (btn === "DOWN") state = "q11";
+                else state = "q0";
+            } else if (state === "q11") {
+                if (btn === "UP") state = "q12";
+                else state = "q0";
+            } else if (state === "q12") {
+                if (btn === "UP") state = "q13";
+                else state = "q0";
+            } else if (state === "q13") {
+                if (btn === "DOWN") state = "q14";
+                else state = "q0";
+            } else if (state === "q14") {
+                if (btn === "DOWN") state = "q_unlock_all";
+                else state = "q0";
+            } else if (state.startsWith("q_")) {
+                if (btn === "RIGHT") state = "q1";
+                else if (btn === "UP") state = "q7";
+                else state = "q0";
+            }
+
+            // Cek apakah kombinasi patah / input salah
+            let isBroken = false;
+            if (oldState !== "q0" && !oldState.startsWith("q_") && state === "q0") {
+                isBroken = true;
+            } else if (oldState === "q0" && state === "q0" && btn !== "RIGHT" && btn !== "UP") {
+                isBroken = true;
+            }
+
+            if (isBroken) {
+                inputHistory = [];
+                buffer.innerHTML = "";
+            } else {
+                inputHistory.push(btn);
+            }
+
+            updateUI(btn, isBroken);
+            
+            // Render Icon di Terminal
+            if (!isBroken) {
+                const iconMap = {
+                    'UP': 'arrow_upward',
+                    'DOWN': 'arrow_downward',
+                    'LEFT': 'arrow_back',
+                    'RIGHT': 'arrow_forward',
+                    'TRIANGLE': 'change_history',
+                    'SQUARE': 'crop_square',
+                    'CIRCLE': 'circle',
+                    'CROSS': 'close'
+                };
+                
+                const span = document.createElement('span');
+                span.className = "material-symbols-outlined text-2xl opacity-0 translate-y-4 transition-all duration-300";
+                span.textContent = iconMap[btn];
+                buffer.appendChild(span);
+                setTimeout(() => {
+                    span.classList.remove('opacity-0', 'translate-y-4');
+                }, 10);
+            } else {
+                 buffer.innerHTML = `<span class="text-error">[ Kosong ]</span>`;
+            }
+
+            if (isBroken || state.startsWith("q_")) {
+                state = "q0";
+                inputHistory = [];
+                resetTimeout = setTimeout(() => {
+                    if (inputHistory.length === 0) {
+                        document.getElementById('input-buffer').innerHTML = `[ Kosong ]`;
+                    }
+                }, 1500);
+            }
+        }
+
+        function updateUI(btn, isBroken) {
+            const stateBadge = document.getElementById('state-badge');
+            const hint = document.getElementById('hint-text');
+            
+            // Feedback badge pulsing
+            stateBadge.classList.remove('pulsing-glow');
+            void stateBadge.offsetWidth; 
+            stateBadge.classList.add('pulsing-glow');
+            
+            if (isBroken) {
+                stateBadge.textContent = state;
+                stateBadge.className = "w-32 h-32 bg-error-container text-on-error-container rounded-2xl font-code-terminal text-4xl flex items-center justify-center border-2 border-error/50 pulsing-glow transition-all duration-300";
+                hint.innerHTML = `❌ [KOMBINASI PATAH]<br>Tombol salah! DFA otomatis Reset ke State q0.`;
+                hint.className = "text-error font-label-caps text-[11px] uppercase tracking-[0.2em] leading-relaxed";
+                return;
+            }
+
+            if (state.startsWith("q_")) {
+                stateBadge.innerHTML = `<span class="text-sm text-center font-bold">FINAL<br>STATE</span>`;
+                
+                let cheatName = "";
+                if (state === "q_money") cheatName = "DAPAT UANG BANYAK";
+                else if (state === "q_maut") cheatName = "PUKULAN MAUT";
+                else if (state === "q_unlock_all") cheatName = "MEMBUKA SEMUA YANG TERKUNCI";
+
+                let isNowUnlocked = true;
+                if (unlockedCheats.has(state)) {
+                    unlockedCheats.delete(state);
+                    isNowUnlocked = false;
+                } else {
+                    unlockedCheats.add(state);
+                }
+                
+                if (typeof renderAchievements === 'function') renderAchievements();
+
+                if (isNowUnlocked) {
+                    stateBadge.className = "w-32 h-32 bg-secondary-container text-on-secondary-fixed rounded-2xl font-code-terminal text-[18px] flex items-center justify-center border-2 border-secondary/50 pulsing-glow transition-all duration-300";
+                    hint.innerHTML = `🔊 ✨ ${cheatName} ACTIVATED! ✨<br><span class='text-secondary-fixed text-[9px] mt-2 block tracking-normal normal-case'>Mencapai Final State (${state}). Cheat berhasil dibuka!</span>`;
+                    hint.className = "text-secondary font-label-caps text-[11px] uppercase tracking-[0.1em] leading-relaxed font-bold";
+                } else {
+                    stateBadge.className = "w-32 h-32 bg-error-container text-on-error-container rounded-2xl font-code-terminal text-[18px] flex items-center justify-center border-2 border-error/50 pulsing-glow transition-all duration-300";
+                    hint.innerHTML = `🔇 ❌ ${cheatName} DEACTIVATED! ❌<br><span class='text-error text-[9px] mt-2 block tracking-normal normal-case'>Mencapai Final State (${state}). Cheat telah dinonaktifkan.</span>`;
+                    hint.className = "text-error font-label-caps text-[11px] uppercase tracking-[0.1em] leading-relaxed font-bold";
+                }
+            } else {
+                stateBadge.textContent = state;
+                stateBadge.className = "w-32 h-32 bg-primary-container text-on-primary-container rounded-2xl font-code-terminal text-4xl flex items-center justify-center border-2 border-primary/20 pulsing-glow transition-all duration-300";
+                
+                let step = 0;
+                if (["q1", "q7"].includes(state)) step = 1;
+                else if (["q2", "q10"].includes(state)) step = 2;
+                else if (["q3", "q11"].includes(state)) step = 3;
+                else if (["q4", "q8", "q12"].includes(state)) step = 4;
+                else if (["q5", "q9", "q13"].includes(state)) step = 5;
+                else if (["q14"].includes(state)) step = 6;
+                
+                hint.innerHTML = `🡢 [LOG DFA]: Tombol valid.<br>Berada di State ${state} (Langkah ${step}).`;
+                hint.className = "text-tertiary-fixed font-label-caps text-[11px] uppercase tracking-[0.1em] leading-relaxed";
+            }
+        }
+
+        function resetDFA() {
+            if (resetTimeout) {
+                clearTimeout(resetTimeout);
+                resetTimeout = null;
+            }
+            state = "q0";
+            inputHistory = [];
+            const buffer = document.getElementById('input-buffer');
+            const hint = document.getElementById('hint-text');
+            const stateBadge = document.getElementById('state-badge');
+            
+            buffer.innerHTML = `[ Kosong ]`;
+            
+            hint.innerHTML = "Menunggu input tombol pertama pada stik<br>...";
+            hint.className = "text-outline font-label-caps text-[11px] uppercase tracking-[0.2em] leading-relaxed animate-pulse";
+            
+            stateBadge.textContent = state;
+            stateBadge.className = "w-32 h-32 bg-primary-container text-on-primary-container rounded-2xl font-code-terminal text-4xl flex items-center justify-center border-2 border-primary/20 pulsing-glow transition-all duration-300";
+        }
+
+        function renderAchievements() {
+            const cheats = [
+                { id: "q_money", name: "DAPAT UANG BANYAK", icon: "payments", desc: "Berhasil mendapatkan uang tak terbatas" },
+                { id: "q_maut", name: "PUKULAN MAUT", icon: "sports_martial_arts", desc: "Berhasil mengaktifkan kekuatan pukulan maut" },
+                { id: "q_unlock_all", name: "MEMBUKA SEMUA YANG TERKUNCI", icon: "key", desc: "Berhasil membuka semua item dan wilayah terkunci" }
+            ];
+
+            const container = document.getElementById('achievements-list');
+            if (!container) return;
+            
+            container.innerHTML = "";
+            let unlockedCount = 0;
+
+            cheats.forEach(cheat => {
+                const isUnlocked = unlockedCheats.has(cheat.id);
+                if (isUnlocked) unlockedCount++;
+                
+                const cardClass = isUnlocked 
+                    ? "bg-secondary-container/20 border-secondary/50 text-on-surface" 
+                    : "bg-surface-container-highest/30 border-outline-variant/10 text-on-surface-variant opacity-60";
+                    
+                const iconClass = isUnlocked
+                    ? "text-secondary drop-shadow-[0_0_8px_rgba(0,227,253,0.8)]"
+                    : "text-outline";
+                    
+                const iconName = isUnlocked ? cheat.icon : "lock";
+
+                container.innerHTML += `
+                    <div class="flex items-center gap-4 p-4 rounded-xl border ${cardClass} transition-all duration-300">
+                        <div class="w-12 h-12 rounded-full bg-surface flex items-center justify-center border border-outline-variant/20 shrink-0">
+                            <span class="material-symbols-outlined text-2xl ${iconClass}">${iconName}</span>
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-label-caps text-sm tracking-widest ${isUnlocked ? 'text-secondary' : ''}">${cheat.name}</h3>
+                            <p class="text-xs mt-1 ${isUnlocked ? 'text-on-surface-variant' : 'text-outline'}">${isUnlocked ? cheat.desc : 'LOCKED - Rahasia belum terpecahkan'}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const progress = document.getElementById('achievement-progress');
+            if (progress) progress.innerText = `${unlockedCount} / 3 TERBUKA`;
+        }
+        
+        window.addEventListener('DOMContentLoaded', renderAchievements);
+
+    </script>
+    <!-- Modals -->
+    <!-- Info Modal -->
+    <div id="modal-info" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" onclick="closeModal('modal-info')"></div>
+        <div class="relative bg-surface-container border border-outline-variant/30 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-outline-variant/20">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-2xl">info</span>
+                    <h2 class="font-headline-md-mobile text-on-surface">System Information</h2>
+                </div>
+                <button onclick="closeModal('modal-info')" class="text-on-surface-variant hover:text-error transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-surface flex-grow flex flex-col gap-6">
+                
+                <div>
+                    <h3 class="font-label-caps text-secondary text-sm tracking-widest mb-3">Tentang Sistem</h3>
+                    <p class="text-sm text-on-surface-variant leading-relaxed">
+                        <b>Simulasi DFA (Deterministic Finite Automaton)</b> ini memodelkan input kode cheat rahasia selayaknya sebuah game engine sungguhan. Sistem ini dirancang untuk mendemonstrasikan bagaimana Finite State Machine dapat digunakan untuk melacak dan memvalidasi urutan masukan kontrol secara real-time.
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="font-label-caps text-secondary text-sm tracking-widest mb-3">Tim Pengembang</h3>
+                    <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-container-highest border border-outline-variant/10">
+                            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">K</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-on-surface">Kanaya Traylingga Pratama</h4>
+                                <p class="text-xs text-outline font-code-terminal">NPM: 2415061059</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-container-highest border border-outline-variant/10">
+                            <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">R</div>
+                            <div>
+                                <h4 class="text-sm font-bold text-on-surface">Rifki Yudika Perdana</h4>
+                                <p class="text-xs text-outline font-code-terminal">NPM: 2415061090</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-outline-variant font-code-terminal text-center mt-2 opacity-50">
+                    <p>Dibuat untuk memenuhi Tugas Praktikum Teori Bahasa dan Automata.</p>
+                </div>
+
+            </div>
+            <div class="p-4 border-t border-outline-variant/20 bg-surface-container-highest flex justify-end">
+                <button onclick="closeModal('modal-info')" class="px-6 py-2 bg-primary text-on-primary rounded font-label-caps hover:bg-primary-fixed transition-colors">TUTUP</button>
+            </div>
+        </div>
+    </div>
+    <!-- Achievements Modal -->
+    <div id="modal-achievements" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" onclick="closeModal('modal-achievements')"></div>
+        <div class="relative bg-surface-container border border-outline-variant/30 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-outline-variant/20">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-secondary text-2xl">emoji_events</span>
+                    <h2 class="font-headline-md-mobile text-on-surface">Achievements</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="achievement-progress" class="font-code-terminal text-xs text-secondary-fixed bg-secondary-container/20 px-3 py-1 rounded-full border border-secondary/30">0 / 3 TERBUKA</span>
+                    <button onclick="closeModal('modal-achievements')" class="text-on-surface-variant hover:text-error transition-colors">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto bg-surface flex-grow flex flex-col gap-3" id="achievements-list">
+                <!-- Injected via JS -->
+            </div>
+            <div class="p-4 border-t border-outline-variant/20 bg-surface-container-highest flex justify-end">
+                <button onclick="closeModal('modal-achievements')" class="px-6 py-2 bg-primary text-on-primary rounded font-label-caps hover:bg-primary-fixed transition-colors">TUTUP</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Modal -->
+    <div id="modal-table" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-background/80 backdrop-blur-sm" onclick="closeModal('modal-table')"></div>
+        <div class="relative bg-surface-container border border-outline-variant/30 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div class="flex justify-between items-center p-6 border-b border-outline-variant/20">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">table_chart</span>
+                    <h2 class="font-headline-md-mobile text-on-surface">Tabel Transisi DFA</h2>
+                </div>
+                <button onclick="closeModal('modal-table')" class="text-on-surface-variant hover:text-error transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-surface flex-grow">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse font-code-terminal text-sm">
+                        <thead>
+                            <tr class="bg-surface-container-highest text-on-surface border-b border-outline-variant/30">
+                                <th class="p-3 whitespace-nowrap">State</th>
+                                <th class="p-3">UP</th>
+                                <th class="p-3">DOWN</th>
+                                <th class="p-3 whitespace-nowrap text-error">LEFT</th>
+                                <th class="p-3 whitespace-nowrap text-secondary">RIGHT</th>
+                                <th class="p-3 text-secondary">TRIANGLE</th>
+                                <th class="p-3 text-tertiary">SQUARE</th>
+                                <th class="p-3 text-error">CIRCLE</th>
+                                <th class="p-3 text-secondary-fixed">CROSS</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-on-surface-variant divide-y divide-outline-variant/10">
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q0</td><td class="p-3">q7</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3">q1</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q1</td><td class="p-3">q2</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q2</td><td class="p-3">q3</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q3</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3">q8</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3">q4</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q4</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3">q5</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q5</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-secondary">q_money</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q8</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3">q9</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q9</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-secondary">q_maut</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q7</td><td class="p-3 text-error">q0</td><td class="p-3">q10</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q10</td><td class="p-3 text-error">q0</td><td class="p-3">q11</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q11</td><td class="p-3">q12</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q12</td><td class="p-3">q13</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q13</td><td class="p-3 text-error">q0</td><td class="p-3">q14</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors">
+                                <td class="p-3 text-primary">q14</td><td class="p-3 text-error">q0</td><td class="p-3 text-secondary">q_unlock_all</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                            <tr class="hover:bg-surface-container-high transition-colors border-t-2 border-outline-variant">
+                                <td class="p-3 text-secondary font-bold">Final States<br>(q_*)</td><td class="p-3 text-primary">q7</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-primary">q1</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td><td class="p-3 text-error">q0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 text-[10px] text-outline-variant font-code-terminal bg-surface-container-lowest p-3 rounded">
+                    <span class="text-error font-bold">q0</span> menandakan error / reset karena menekan kombinasi yang salah atau patah di tengah jalan.<br/>
+                    Final states mencakup <b>q_money</b> (Dapat Uang Banyak), <b>q_maut</b> (Pukulan Maut), dan <b>q_unlock_all</b> (Membuka Semua).
+                </div>
+            </div>
+            <div class="p-4 border-t border-outline-variant/20 bg-surface-container-highest flex justify-end">
+                <button onclick="closeModal('modal-table')" class="px-6 py-2 bg-primary text-on-primary rounded font-label-caps hover:bg-primary-fixed transition-colors">TUTUP</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+        }
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
